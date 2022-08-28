@@ -2,6 +2,7 @@
 
 Digital Hackday2022で利用可能できるLINE Clove APIの、検証用のプログラムです。
 
+## 提供資料
 下記のドキュメントは、公式のdiscordで提供されたgRPCのドキュメントである。
 
 - [STT Public API Document - JP ver.](docs/jp.md)
@@ -13,7 +14,7 @@ Digital Hackday2022で利用可能できるLINE Clove APIの、検証用のプ�
 - `protocol-adapter-common-v1.proto`
 - `protocol-adapter.proto`
 
-## QuickStart
+# QuickStart
 
 はじめに、下記のコマンドを実行し、必要ライブラリをインストールする。
 
@@ -60,9 +61,9 @@ client received: アメリカのcbc疾病対策センターのコップが 旅�
 (dhackday) SeiichironoMacBook-puro:clova sey323$ python main.py --url=samples/test.wav
 ```
 
-## 変換方法
+## `proto`ファイルの変換方法
 
-開発をする場合、はじめにprotoファイルをpython用に変換します。(本リポジトリをそのままcloneした場合は、`protobufpy/`に作成済みなのでこの作業は必要ない)
+開発をする場合、はじめにprotoファイルをpython用に変換する必要がある。(本リポジトリをcloneした場合は、`protobufpy/`に作成済みなのでこの作業は必要ない)
 
 protoファイルをpython用に変換する際は、下記のファイルの`*1`の箇所を、変換したい`.proto`ファイルに変更し実行する。
 
