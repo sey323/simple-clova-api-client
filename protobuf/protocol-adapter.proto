@@ -1,0 +1,162 @@
+/**
+ * Speech-To-Text API protocol
+*/
+
+syntax = "proto3";
+package ccai.vsg.recogntition.v1;
+import "protocol-adapter-common-v1.proto";
+
+/**
+ * Speech-To-Text RPCs
+*/
+service Recognizer {
+  // Speech-To-Text RPC
+  rpc Recognize(RecognitionRequest) returns (RecognitionResponse) {}
+
+  // Streaming Speech-To-Text RPC
+  rpc StreamingRecognize(stream StreamingRecognitionRequest) returns (stream StreamingRecognitionResponse) {}
+
+  // Mixed-streaming Speech-To-Text RPC (currently N/A)
+  rpc MixedStreamingRecognize(stream RecognitionRequest) returns (stream RecognitionResponse) {}
+
+  // Async Speech-To-Text RPC (currently N/A)
+  rpc LongRunningRecognize(LongRunningRecognitionRequest) returns (LongRunningRecognitionResponse) {}
+
+  // RPC to fetch the result of async Speech-To-Text request
+  rpc GetLongRunningRecognitionState(LongRunningRecognitionRequest) returns (LongRunningRecognitionResponse) {}
+}
+
+/**
+ * Async Speech-To-Text request
+*/
+message LongRunningRecognitionRequest {
+  string recognition_id = 1; // unique ID of recognition request (recommended to use UUID4)
+  LongRunningRecognitionConfig config = 2; // recognition configuration
+  InputType input_type = 3; // audio sending way (audio content or audio URI)
+  oneof input {
+    bytes audio_content = 4; // audio data to be recognized (size limit: 4MB)
+    string audio_uri = 5; // URI of audio data to be recognized (size limit: 1GB, length limit: 6 hours)
+  }
+  enum InputType {
+    AUDIO_CONTENT = 0; // send audio data directly
+    AUDIO_URI = 1; // send URI on public storages where the audio data is placed
+  }
+}
+
+/**
+ * Async Speech-To-Text configuration
+*/
+message LongRunningRecognitionConfig {
+  string api_key = 1; // API key provided for each user
+  AudioFormat audio_format = 2; // audio format
+  Language language = 3; // audio language
+  CallbackType callback_type = 4 [deprecated=true]; // callback type
+  string callback_server = 5 [deprecated=true]; // URL of the server to receive callbacks
+  optional LongRunningCallbackConfig callback_config = 6; // callback configuration
+  enum CallbackType {
+    GRPC = 0; // callback using gRPC
+  }
+}
+
+/**
+ * Callback configuration for async Speech-To-Text requests
+*/
+message LongRunningCallbackConfig {
+  CallbackType callback_type = 1; // callback type
+  string callback_server = 2; // URL of the server to receive callbacks
+  enum CallbackType {
+    GRPC = 0; // callback using gRPC
+  }
+}
+
+/**
+ * Response to async Speech-To-Text requests
+*/
+message LongRunningRecognitionResponse {
+  string recognition_id = 1; // recognition ID specified in the request
+  Status status = 2; // processing status
+  optional FinalRecognitionResult result = 3; // recognition result
+  enum Status {
+    SUCCEEDED = 0;
+    PROCESSING = 1;
+    FAILED = 2;
+  }
+}
+
+/**
+ * Speech-To-Text request
+*/
+message RecognitionRequest {
+  string recognition_id = 1; // unique ID of recognition request (recommended to use UUID4)
+  RecognitionConfig config = 2; // recognition configuration
+  bytes audio_content = 3; // audio data to be recognized (size limit: 4MB)
+}
+
+/**
+ * Speech-To-Text request configuration
+*/
+message RecognitionConfig {
+  string api_key = 1; // API key provided for each user
+  AudioFormat audio_format = 2; // audio format
+  Language language = 3; // audio language
+}
+
+/**
+ * Response to Speech-To-Text request
+*/
+message RecognitionResponse {
+  string recognition_id = 1; // recognition ID specified in the request
+  FinalRecognitionResult result = 2; // recognition result
+}
+
+/**
+ * Streaming Speech-To-Text request (sent several times in the stream)
+*/
+message StreamingRecognitionRequest {
+  string recognition_id = 1; // unique ID of the recognition stream (recommended to use UUID4). it shouldn't change into other value in the same stream.
+  StreamingRecognitionConfig config = 2; // recognition config
+  bytes audio_content = 3; // audio data to be recognized (size limit: 4MB)
+}
+
+/**
+ * Streaming Speech-To-Text request configuration
+*/
+message StreamingRecognitionConfig {
+  string api_key = 1; // API key provided for each user
+  AudioFormat audio_format = 2; // audio format
+  Language language = 3; // audio language
+  bool end_point_detection_enabled = 4; // flag to enable End-Point-Detection（EPD) feature in server-side
+  bool mid_result_enabled = 5; // flag to receive interim recognition results
+  Boost boost = 6;
+  Forbidden forbidden = 7;
+}
+
+/**
+ * Response to streaming Speech-To-Text request (sent several times in the stream)
+*/
+message StreamingRecognitionResponse {
+  string recognition_id = 1; // recognition ID specified in all requests on the same stream
+  string speech_id = 2; // the ID of the recognized speech (the server will issue a new ID randomly)
+  oneof result {
+    MidRecognitionResult mid_result = 3; // interim recognition result
+    FinalRecognitionResult final_result = 4; // final recognition result
+  }
+}
+
+/**
+ * Interim recognition result of streaming Speech-To-Text
+*/
+message MidRecognitionResult {
+  string text = 1; // recognized text
+}
+
+/**
+ * Final recognition result
+*/
+message FinalRecognitionResult {
+  string text = 1; // recognized text
+  uint32 start_offset_in_milliseconds = 2; // offset of the start time of the speech (ms)
+  uint32 end_offset_in_milliseconds = 3; // offset of the end time of the speech (ms)
+  float confidence = 4; // recognition confidence
+  repeated Segment segments = 5; // analysis result of each speech segment (set if the analysis succeeded)
+}

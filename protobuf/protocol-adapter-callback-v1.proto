@@ -1,0 +1,33 @@
+/**
+ * Callback protocol for async Speech-To-Text API
+*/
+
+syntax = "proto3";
+
+package ccai.vsg.recogntition.callback.v1;
+
+/**
+ * Callback RPC
+*/
+service RecognizerCallback {
+  // RPC to notify the completion of async Speech-To-Text
+  rpc LongRunningRecognitionCallback (LongRunningRecognitionCallbackRequest) returns (LongRunningRecognitionCallbackResponse) {}
+}
+
+/**
+ * Callback request
+*/
+message LongRunningRecognitionCallbackRequest {
+  string recognition_id = 1; // recognition ID specified in the Speech-To-Text request
+  Status status = 2; // recognition status
+  enum Status {
+    SUCCEEDED = 0;
+    FAILED = 1;
+  }
+}
+
+/**
+ * Callback response
+*/
+message LongRunningRecognitionCallbackResponse {
+}

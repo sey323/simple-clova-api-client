@@ -1,0 +1,66 @@
+syntax = "proto3";
+package ccai.vsg.recogntition.v1;
+
+/**
+ * TBD
+*/
+message Boost {
+  repeated string keywords = 1;
+  repeated string ids = 2;
+}
+
+/**
+ * TBD
+*/
+message Forbidden {
+  repeated string keywords = 1;
+  repeated string ids = 2;
+}
+
+/**
+ * Analysis result of the speech segment
+*/
+message Segment {
+  string text = 1; // recognized text
+  uint32 start_offset_in_milliseconds = 2; // offset of the start time of the speech segment (ms)
+  uint32 end_offset_in_milliseconds = 3; // offset of the end time of the speech segment (ms)
+  float confidence = 4; // recognition confidence
+  repeated Word words = 5; // analysis result of each word in the segment (set if the analysis succeeded)
+}
+
+/**
+ * Analysis result of the word in the speech segment
+*/
+message Word {
+  string text = 1; // recognized text
+  uint32 start_offset_in_milliseconds = 2; // offset of the start time of the word (ms)
+  uint32 end_offset_in_milliseconds = 3; // offset of the end time of the word (ms)
+}
+
+/**
+ * Available audio format
+*/
+enum AudioFormat {
+  UNSPECIFIED = 0; // default value. if this is specified, the server will return error
+  AUDIO_L16_RATE_8000_CHANNELS_1 = 1; // 16bit 8kHz mono WAV audio (linear PCM)
+  AUDIO_L16_RATE_16000_CHANNELS_1 = 2; // 16bit 16kHz mono WAV audio (linear PCM)
+}
+
+/**
+ * Audio language
+*/
+enum Language {
+  KO = 0;
+  JA = 1;
+  EN = 2;
+  ZH_CN = 3;
+  ZH_TW = 4;
+  ES = 5;
+  FR = 6;
+  RU = 7;
+  VI = 8;
+  TH = 9;
+  ID = 10;
+  DE = 11;
+  IT = 12;
+}

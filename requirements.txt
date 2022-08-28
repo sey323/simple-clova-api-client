@@ -1,0 +1,15 @@
+googleapis-common-protos==1.56.4
+grpcio==1.47.0
+grpcio-tools==1.47.0
+grpclib==0.4.3
+h2==4.1.0
+hpack==4.0.0
+hyperframe==6.0.1
+multidict==6.0.2
+numpy==1.23.2
+protobuf==3.20.1
+pydub==0.25.1
+python-dotenv==0.20.0
+scipy==1.9.1
+six==1.16.0
+youtube-dl==2021.12.17
